@@ -143,11 +143,20 @@ class Chimes {
     })
 
     this.filter = new Tone.Filter();
+    this.delayVolume = new Tone.Gain();
     this.volume = new Tone.Gain();
+    this.delayVolume = new Tone.Gain();
+    this.delay = new Tone.FeedbackDelay(0.25, 0.3)
 
     this.synth.connect(this.filter);
     this.filter.connect(this.volume);
     this.volume.toMaster();
+
+    // Delay
+    this.filter.connect(this.delay);
+    this.delay.connect(this.delayVolume)
+    this.delayVolume.toMaster()
+    this.delayVolume.gain.value = 0.2    
     
     this.filter.frequency.value = 127 / 127 * 10800; // 200 - 15000
     this.volume.gain.value = 127 / 127; // 0-0.8
