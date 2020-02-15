@@ -34,9 +34,10 @@ class Chimes {
     this.delayVolume = new Tone.Gain();
     this.volume = new Tone.Gain();
     this.delay = new Tone.FeedbackDelay(0.25, 0.3)
-    // TODO: LFO: https://tonejs.github.io/docs/13.8.25/LFO
+    this.lfo = new Tone.LFO(5, 1200, 10000)
 
     this.synth.connect(this.filter);
+    this.lfo.connect(this.filter.frequency).start()
     this.filter.connect(this.volume);
     this.volume.toMaster();
 
@@ -46,7 +47,6 @@ class Chimes {
     this.delayVolume.toMaster()
     this.delayVolume.gain.value = 0.2    
     
-    this.filter.frequency.value = 127 / 127 * 10800; // 200 - 15000
     this.volume.gain.value = 127 / 127; // 0-0.8
   }
 
