@@ -1,27 +1,25 @@
 const React = require('react')
+const { useState, useEffect } = React
 
-class ControlPanel extends React.PureComponent {
-  render () {
-    const {
-      attack,
-      decay,
-      sustain,
-      release,
-      volume,
-      baseFrequency
-    } = this.props
+function ControlPanel () {
+  const [attack, setAttack] = useState(null)
+  const [decay, setDecay] = useState(null)
+  const [sustain, setSustain] = useState(null)
+  const [release, setRelease] = useState(null)
+  const [volume, setVolume] = useState(null)
+  const [baseFrequency, setBaseFrequency] = useState(null)
 
-    return (
-      <>
-        <h1>Web Audio Instrument Control Panel</h1>
+
+  return (
+    <>
+      <h1>Web Audio Instrument Control Panel</h1>
+      {[attack, decay, sustain, release, volume, baseFrequency].some(i => !!i) && (
         <pre>
-          {"{"}
-          {(Object.keys(this.props).map(key => <div>{"  "}{key}: {this.props[key]},</div>))}
-          {"}"}
+          Hello
         </pre>
-      </>
-    )
-  }
+      )}
+    </>
+  )
 }
 
 module.exports = ControlPanel
