@@ -30,30 +30,33 @@ function ControlPanel () {
       function onKeyboardInput(e) {
         const type = e.type === 'keydown' ? 144 : 123
         switch (e.key) {
-          case 'a':
-            inst.toggleSound(type, mapMIDIToTone(72))
+          case 'q':
+            inst.toggleSound(type, mapMIDIToTone(62+24))
             break
-          case 's':
-            inst.toggleSound(type, mapMIDIToTone(74))
+          case 'w':
+            inst.toggleSound(type, mapMIDIToTone(64+24))
             break
-          case 'd':
-            inst.toggleSound(type, mapMIDIToTone(76))
+          case 'e':
+            inst.toggleSound(type, mapMIDIToTone(65+24))
             break
-          case 'f':
-            inst.toggleSound(type, mapMIDIToTone(77))
+          case 'r':
+            inst.toggleSound(type, mapMIDIToTone(67+24))
             break
-          case 'g':
-            inst.toggleSound(type, mapMIDIToTone(79))
+          case 't':
+            inst.toggleSound(type, mapMIDIToTone(69+24))
             break
-          case 'h':
-            inst.toggleSound(type, mapMIDIToTone(81))
+          case 'y':
+            inst.toggleSound(type, mapMIDIToTone(71+24))
             break
-          case 'j':
-            inst.toggleSound(type, mapMIDIToTone(83))
+          case 'u':
+            inst.toggleSound(type, mapMIDIToTone(72+24))
             break
-          // case 'k':
-          //   inst.toggleSound(type, 84)
-          //   break
+          case 'i':
+            inst.toggleSound(type, mapMIDIToTone(74+24))
+            break
+          case 'o':
+            inst.toggleSound(type, mapMIDIToTone(76+24))
+            break
         }
       }
       
