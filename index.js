@@ -1,6 +1,7 @@
+const React = require('react')
+const ReactDOM = require('react-dom')
+const ControlPanel = require('./src/components/ControlPanel')
 const Tone = require('tone')
-
-console.clear();
 
 class MIDIAccess {
   constructor(args = {}) {
@@ -115,11 +116,16 @@ class Baseline {
 }
 
 class Chimes {
-  constructor() {
-    this.attack = 36 / 1000
-    this.decay = 46 / 1000
-    this.sustain = 63 / 127 
-    this.release = 42 / 100
+  constructor(opts) {
+    this.attack = opts.attack
+    this.decay = opts.decay
+    this.sustain = opts.sustain
+    this.release = opts.release
+    this.baseFrequency = opts.baseFrequency
+    this.gain = opts.volume
+
+    const controlPanel = ReactDOM.render(<ControlPanel {...opts} />, document.getElementById('render'))
+    console.log(controlPanel)
   
     this.synth = new Tone.PolySynth(4, Tone.MonoSynth, {
       oscillator : {
@@ -133,11 +139,11 @@ class Chimes {
         release : 0.00001
       },
       filterEnvelope: {
-        attack : 0.06 ,
-        decay : 0.2 ,
-        sustain : 0.5 ,
-        release : 2 ,
-        baseFrequency: "A7",
+        attack : this.attack ,
+        decay : this.decay,
+        sustain : this.sustain,
+        release : this.release,
+        baseFrequency: this.baseFrequency,
         octaves: 2.7
       }
     })
@@ -145,8 +151,8 @@ class Chimes {
     this.filter = new Tone.Filter();
     this.delayVolume = new Tone.Gain();
     this.volume = new Tone.Gain();
-    this.delayVolume = new Tone.Gain();
     this.delay = new Tone.FeedbackDelay(0.25, 0.3)
+    // TODO: LFO: https://tonejs.github.io/docs/13.8.25/LFO
 
     this.synth.connect(this.filter);
     this.filter.connect(this.volume);
@@ -261,7 +267,16 @@ document.documentElement.addEventListener('mousedown', () => {
   // }
 
   // Chimes
-  const inst = new Chimes();
+  const opts = {
+    attack: 6 / 100,
+    decay: 20 / 100,
+    sustain: 50 / 100,
+    release: 1 / 1000,
+    volume: 1,
+    baseFrequency: 10000
+  }
+  const inst = new Chimes(opts);
+  
   function onDeviceInput({ type, input, value }) {
     if (input > 35 && input < 97) inst.toggleSound(type, input);
     else if (input === 20) inst.handleVolume(value);
