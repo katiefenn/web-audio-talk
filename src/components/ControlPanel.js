@@ -9,6 +9,9 @@ function ControlPanel () {
   const [volume, setVolume] = useState(null)
   const [baseFrequency, setBaseFrequency] = useState(null)
 
+  useEffect(() => {
+    
+  }, [])
 
   return (
     <>
