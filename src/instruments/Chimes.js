@@ -9,7 +9,7 @@ class Chimes {
     this.baseFrequency = opts.baseFrequency
     this.gain = opts.volume
   
-    this.synth = new Tone.PolySynth(4, Tone.MonoSynth, {
+    this.synth = new Tone.PolySynth(4, Tone.Synth, {
       oscillator : {
         type : "pulse",
         width: 0.01
@@ -19,14 +19,6 @@ class Chimes {
         decay : 0.1 ,
         sustain : 0.3 ,
         release : 0.00001
-      },
-      filterEnvelope: {
-        attack : this.attack ,
-        decay : this.decay,
-        sustain : this.sustain,
-        release : this.release,
-        baseFrequency: this.baseFrequency,
-        octaves: 2.7
       }
     })
 
@@ -68,23 +60,19 @@ class Chimes {
   }
 
   handleAttack(value) {
-    let val = value / 1000
-    this.synth.voices[0].filterEnvelope.attack = val
+    this.synth.voices[0].filterEnvelope.attack = value
   }
 
   handleDecay(value) {
-    let val = value / 1000
-    this.synth.voices[0].filterEnvelope.decay = val
+    this.synth.voices[0].filterEnvelope.decay = value
   }
 
   handleSustain(value) {
-    let val = value / 127
-    this.synth.voices[0].filterEnvelope.sustain = val
+    this.synth.voices[0].filterEnvelope.sustain = value
   }
 
   handleRelease(value) {
-    let val = value / 100
-    this.synth.voices[0].filterEnvelope.release = val
+    this.synth.voices[0].filterEnvelope.release = value
   }
 
   handleBaseFrequency(value) {

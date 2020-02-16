@@ -1,6 +1,7 @@
 const React = require('react')
 const { useState, useEffect } = React
 
+const EnvelopeVisualiser = require('./EnvelopeVisualiser')
 const MIDIAccess = require('../utils/MIDIAccess')
 const Chimes = require('../instruments/Chimes')
 const Bass = require('../instruments/Bass')
@@ -81,20 +82,20 @@ function ControlPanel () {
             setVolume(value)
             break
           case 22:
-            inst.handleAttack(value)
-            setAttack(value)
+            inst.handleAttack(value / 1000)
+            setAttack(value / 1000)
             break
           case 23:
-            inst.handleDecay(value)
-            setDecay(value)
+            inst.handleDecay(value / 1000)
+            setDecay(value / 1000)
             break
           case 61:
-            inst.handleSustain(value)
-            setSustain(value)
+            inst.handleSustain(value / 127)
+            setSustain(value / 127)
             break
           case 24:
-            inst.handleRelease(value)
-            setRelease(value)
+            inst.handleRelease(value / 100)
+            setRelease(value / 100)
             break
           case 26:
             inst.handleBaseFrequency(value * 100)
@@ -125,6 +126,7 @@ function ControlPanel () {
           {'}'}
         </pre>
       )}
+      <EnvelopeVisualiser attack={attack} decay={decay} sustain={sustain} release={release} />
     </>
   )
 }
