@@ -32,31 +32,55 @@ function ControlPanel () {
         const type = e.type === 'keydown' ? 144 : 123
         switch (e.key) {
           case 'q':
-            inst.toggleSound(type, mapMIDIToTone(62+24))
+            chimes.toggleSound(type, mapMIDIToTone(62+24))
             break
           case 'w':
-            inst.toggleSound(type, mapMIDIToTone(64+24))
+            chimes.toggleSound(type, mapMIDIToTone(64+24))
             break
           case 'e':
-            inst.toggleSound(type, mapMIDIToTone(65+24))
+            chimes.toggleSound(type, mapMIDIToTone(65+24))
             break
           case 'r':
-            inst.toggleSound(type, mapMIDIToTone(67+24))
+            chimes.toggleSound(type, mapMIDIToTone(67+24))
             break
           case 't':
-            inst.toggleSound(type, mapMIDIToTone(69+24))
+            chimes.toggleSound(type, mapMIDIToTone(69+24))
             break
           case 'y':
-            inst.toggleSound(type, mapMIDIToTone(71+24))
+            chimes.toggleSound(type, mapMIDIToTone(71+24))
             break
           case 'u':
-            inst.toggleSound(type, mapMIDIToTone(72+24))
+            chimes.toggleSound(type, mapMIDIToTone(72+24))
             break
           case 'i':
-            inst.toggleSound(type, mapMIDIToTone(74+24))
+            chimes.toggleSound(type, mapMIDIToTone(74+24))
             break
           case 'o':
-            inst.toggleSound(type, mapMIDIToTone(76+24))
+            chimes.toggleSound(type, mapMIDIToTone(76+24))
+            break
+          case 'a':
+            bass.toggleSound(type, 'G1')
+            break
+          case 's':
+            bass.toggleSound(type, 'A1')
+            break
+          case 'd':
+            bass.toggleSound(type, 'B1')
+            break
+          case 'f':
+            bass.toggleSound(type, 'C2')
+            break
+          case 'g':
+            bass.toggleSound(type, 'D2')
+            break
+          case 'h':
+            bass.toggleSound(type, 'E2')
+            break
+          case 'j':
+            bass.toggleSound(type, 'F2')
+            break
+          case 'k':
+            bass.toggleSound(type, 'F#2')
             break
         }
       }
@@ -73,7 +97,8 @@ function ControlPanel () {
       // }
     
       // Chimes
-      const inst = new Chimes({ attack, decay, sustain, release, volume, baseFrequency });
+      const chimes = new Chimes({ attack, decay, sustain, release, volume, baseFrequency });
+      const bass = new Bass()
       
       function onDeviceInput({ type, input, value }) {
         switch (input) {
@@ -82,29 +107,29 @@ function ControlPanel () {
             setVolume(value)
             break
           case 22:
-            inst.handleAttack(value / 1000)
+            chimes.handleAttack(value / 1000)
             setAttack(value / 1000)
             break
           case 23:
-            inst.handleDecay(value / 1000)
+            chimes.handleDecay(value / 1000)
             setDecay(value / 1000)
             break
           case 61:
-            inst.handleSustain(value / 127)
+            chimes.handleSustain(value / 127)
             setSustain(value / 127)
             break
           case 24:
-            inst.handleRelease(value / 100)
+            chimes.handleRelease(value / 100)
             setRelease(value / 100)
             break
           case 26:
-            inst.handleBaseFrequency(value * 100)
+            chimes.handleBaseFrequency(value * 100)
             setBaseFrequency(value * 100)
           case 27:
-            inst.handleFilter(value)
+            chimes.handleFilter(value)
             break
           default:
-            if (input > 35 && input < 97) inst.toggleSound(type, mapMIDIToTone(input + 24))
+            if (input > 35 && input < 97) chimes.toggleSound(type, mapMIDIToTone(input + 24))
             console.log('onDeviceInput!', type, input, value)
         }
       }  
@@ -113,20 +138,11 @@ function ControlPanel () {
 
   return (
     <>
-      <h1>Web Audio Instrument Control Panel</h1>
-      {[attack, decay, sustain, release, volume, baseFrequency].some(i => !!i) && (
-        <pre>
-          {'{'}
-            attack: {attack},
-            decay: {decay},
-            sustain: {sustain},
-            release: {release},
-            volume: {volume},
-            baseFrequency: {baseFrequency}
-          {'}'}
-        </pre>
-      )}
-      <EnvelopeVisualiser attack={attack} decay={decay} sustain={sustain} release={release} />
+      <h1>Web Audio experiment</h1>
+      <p>Recreating famous dance tracks with WebAudio API!</p>
+      <p>First: click the page. This is needed to initialise the API.</p>
+      <p>Try the baseline: S, S, S, S, D, F, F, F, F, G, H, H, H, H, K, H, G, F, D, S, A, S</p>
+      <p>Try the chimes: Q, W, I, U, Y, T, R, T, R, T, Y</p>
     </>
   )
 }

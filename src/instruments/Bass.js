@@ -48,8 +48,8 @@ class Bass {
   toggleSound(type, input) {
     let method = type === 144 ? 'triggerAttack' : 'triggerRelease';
     //console.log('input : note', input, mapMIDINumberToTone(input))
-    this.synth[method](mapMIDINumberToTone(input));
-    this.synth2[method](mapMIDINumberToTone(input));
+    this.synth[method](input);
+    this.synth2[method](input);
   }
 
   handleVolume(value) { // 0-127
