@@ -1,4 +1,5 @@
 const Tone = require('tone')
+const mapMIDINumberToTone = require('../utils/mapMIDIToTone')
 
 class Bass {
   constructor() {
@@ -45,32 +46,69 @@ class Bass {
     this.volume2.gain.value = 6 / 127; // 0-0.8
   }
 
-  toggleSound(type, input) {
-    let method = type === 144 ? 'triggerAttack' : 'triggerRelease';
-    //console.log('input : note', input, mapMIDINumberToTone(input))
-    this.synth[method](input);
-    this.synth2[method](input);
+  handleMIDIEvent (event) {
+    const type = mapMidiToBass(event)
+
+    switch (type) {
+      case 'keydown':
+        this.synth.triggerAttack(mapMIDINumberToTone(event.input))
+        this.synth2.triggerAttack(mapMIDINumberToTone(event.input))
+        break
+      case 'keyup':
+        this.synth.triggerRelease(mapMIDINumberToTone(event.input))
+        this.synth2.triggerRelease(mapMIDINumberToTone(event.input))
+        break
+      case 'volume':
+        this.volume.gain.value = event.value / 127
+        break
+      case 'volume2':
+        this.volume.gain.value = event.value / 127
+        break
+      case 'filter':
+        this.volume.gain.value = event.value / 127
+        break
+      case 'filter2':
+        this.volume2.gain.value = event.value / 127
+        break
+      case 'detune':
+        this.synth.set('detune', (event.value - 64) * 15)
+        break
+    }
+  }
+}
+
+function mapMidiToBass ({ type, input }) {
+  const mappings = {
+    // Keydown
+    144: Array(61).fill(undefined).map((item, index) => index + 36).reduce((acc, item) => Object.assign(acc, { [item]: 'keydown' }), {}),
+    // Keyup
+    128: Array(61).fill(undefined).map((item, index) => index + 36).reduce((acc, item) => Object.assign(acc, { [item]: 'keyup' }), {}),
+    // Faders and dials
+    176: {
+      20: /* C1 */ 'volume',
+      21: /* C2 */ 'volume2',
+      22: /* C10 */ 'filter',
+      23: /* C11 */ null,
+      61: /* C12 */ null,
+      24: /* C13 */ null,
+      26: /* C14 */ 'filter2',
+      27: /* C15 */ null,
+      62: /* C16 */ null,
+      95: /* C17 */ null
+    },
+    // Pitch bend
+    224: {
+      0: /* C31 */ 'detune'
+    }
   }
 
-  handleVolume(value) { // 0-127
-    let val = value / 127; // Target: 124
-    this.volume.gain.value = val;
+  if (mappings[type]) {
+    console.info(`Mapped ${type}, ${input} to: `, mappings[type][input])
+    return mappings[type][input]
   }
 
-  handleVolume2(value) { // 0-127
-    let val = value / 127; // Target: 28
-    this.volume2.gain.value = val;
-  }
-
-  handleFilter(value) { // 0-127
-    let val = value / 127 * 10800; // Target: 2
-    this.filter.frequency.value = val;
-  }
-
-  handleFilter2(value) { // 0-127
-    let val = value / 127 * 10800; // Target: 26
-    this.filter2.frequency.value = val;
-  }
+  console.info(`Mapped ${type}, ${input} to: `, null)
+  return null
 }
 
 module.exports = Bass

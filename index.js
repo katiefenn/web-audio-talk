@@ -1,7 +1,7 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const ControlPanel = require('./src/components/ControlPanel')
+const Application = require('./src/components/Application')
 
-const controlPanel = ReactDOM.render(<ControlPanel />, document.getElementById('render'))
+const application = ReactDOM.render(<Application />, document.getElementById('render'))
 
 

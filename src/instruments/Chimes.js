@@ -1,13 +1,14 @@
 const Tone = require('tone')
+const mapMIDINumberToTone = require('../utils/mapMIDIToTone')
 
 class Chimes {
-  constructor(opts) {
-    this.attack = opts.attack
-    this.decay = opts.decay
-    this.sustain = opts.sustain
-    this.release = opts.release
-    this.baseFrequency = opts.baseFrequency
-    this.gain = opts.volume
+  constructor() {
+    this.attack = 6 / 100
+    this.decay = 20 / 200
+    this.sustain = 50 / 100
+    this.release = 1 / 1000
+    this.baseFrequency = 10000
+    this.gain = 1
   
     this.synth = new Tone.PolySynth(4, Tone.Synth, {
       oscillator : {
@@ -42,42 +43,55 @@ class Chimes {
     this.volume.gain.value = 127 / 127; // 0-0.8
   }
 
-  toggleSound(type, input) {
-    let method = type === 144 ? 'triggerAttack' : 'triggerRelease';
-    console.log('input : note', input, method)
-    this.synth[method](input);
-    //this.synth2[method](mapMIDINumberToTone(input));
+  handleMIDIEvent (event) {
+    const type = mapMidiToBass(event)
+
+    switch (type) {
+      case 'keydown':
+        this.synth.triggerAttack(mapMIDINumberToTone(event.input + 24))
+        break
+      case 'keyup':
+        this.synth.triggerRelease(mapMIDINumberToTone(event.input + 24))
+        break
+      case 'detune':
+        this.synth.set('detune', (event.value - 64) * 15)
+        break
+    }
+  }
+}
+
+function mapMidiToBass ({ type, input }) {
+  const mappings = {
+    // Keydown
+    144: Array(61).fill(undefined).map((item, index) => index + 36).reduce((acc, item) => Object.assign(acc, { [item]: 'keydown' }), {}),
+    // Keyup
+    128: Array(61).fill(undefined).map((item, index) => index + 36).reduce((acc, item) => Object.assign(acc, { [item]: 'keyup' }), {}),
+    // Faders and dials
+    176: {
+      20: /* C1 */ null,
+      21: /* C2 */ null,
+      22: /* C10 */ null,
+      23: /* C11 */ null,
+      61: /* C12 */ null,
+      24: /* C13 */ null,
+      26: /* C14 */ null,
+      27: /* C15 */ null,
+      62: /* C16 */ null,
+      95: /* C17 */ null
+    },
+    // Pitch bend
+    224: {
+      0: /* C31 */ 'detune'
+    }
   }
 
-  handleVolume(value) { // 0-127
-    let val = value / 127; // Target: 124
-    this.volume.gain.value = val;
+  if (mappings[type]) {
+    console.info(`Mapped ${type}, ${input} to: `, mappings[type][input])
+    return mappings[type][input]
   }
 
-  handleFilter(value) { // 0-127
-    let val = value / 127 * 10800; // Target: 2
-    this.filter.frequency.value = val;
-  }
-
-  handleAttack(value) {
-    this.synth.voices[0].filterEnvelope.attack = value
-  }
-
-  handleDecay(value) {
-    this.synth.voices[0].filterEnvelope.decay = value
-  }
-
-  handleSustain(value) {
-    this.synth.voices[0].filterEnvelope.sustain = value
-  }
-
-  handleRelease(value) {
-    this.synth.voices[0].filterEnvelope.release = value
-  }
-
-  handleBaseFrequency(value) {
-    this.synth.voices[0].filterEnvelope.baseFrequency = value
-  }
+  console.info(`Mapped ${type}, ${input} to: `, null)
+  return null
 }
 
 module.exports = Chimes
