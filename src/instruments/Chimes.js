@@ -40,7 +40,22 @@ class Chimes {
     this.delayVolume.toMaster()
     this.delayVolume.gain.value = 0.2    
     
-    this.volume.gain.value = 127 / 127; // 0-0.8
+    this.volume.gain.value = 40 / 127; // 0-0.8
+
+    const _ = null
+
+    function callback(time, note){
+      //the notes given as the second element in the array
+      //will be passed in as the second argument
+      this.synth.triggerAttackRelease(note, "16n", time);
+    }
+
+    var seq = new Tone.Sequence(callback.bind(this), [
+      [_, _, _, _], [_, _, _, _], [_, _, _, _], [_, _, "D4", "E4"],
+      ["D5", _, "C5", _], ["B4", _, "A4", _], ["G4", _, "A4", _], ["G4", _, "A4", "B4"],
+      [_, _, _, _], [_, _, _, _], [_, _, _, _], [_, _, "D4", "E4"],
+      ["E5", _, "D5", _], ["C5", _, "B4", _], ["A4", _, "B4", _], ["A4", _, "B4", "E4"],
+    ]).start();
   }
 
   handleMIDIEvent (event) {
