@@ -44,6 +44,26 @@ class Bass {
     this.filter2.frequency.value = 2 / 127 * 10800; // 200 - 15000
     this.volume.gain.value = 68 / 127; // 0-0.8
     this.volume2.gain.value = 6 / 127; // 0-0.8
+
+    function callback(time, note){
+      //the notes given as the second element in the array
+      //will be passed in as the second argument
+      this.synth.triggerAttackRelease(note, "16n", time);
+    }
+
+    const _ = "C16"
+
+    // Bass sequence 3
+    var seq = new Tone.Sequence(callback.bind(this), [
+      ["E2", _, "D3", _], ["E3", _, "E2", _], ["D3", _, "E2", "D3"], [_, "E2", "D3", "E3"],
+      ["C2", _, "C3", _], ["C2", "C3" ,"C2", _], ["A2", "A1", _, "A2"], ["A2", "B2", "G2", _],
+      ["E2", _, "D3", _], ["E3", _, _, _], ["D3", _, "E2", "D3"], [_, "E2", "D3", "E3"],
+      ["C2", _, "C3", _], ["C2", "C3" ,"C2", _], ["A2", "A1", _, "A2"], ["A2", "B2", "G2", _]
+    ]).start();
+
+    Tone.Transport.bpm.value = 122
+
+    Tone.Transport.start()
   }
 
   handleMIDIEvent (event) {
