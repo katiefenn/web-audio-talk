@@ -5,6 +5,7 @@ const EnvelopeVisualiser = require('./EnvelopeVisualiser')
 const MIDIAccess = require('../utils/MIDIAccess')
 const Chimes = require('../instruments/Chimes')
 const Bass = require('../instruments/Bass')
+const Kick = require('../instruments/Kick')
 const mapMIDIToTone = require('../utils/mapMIDIToTone')
 const ControlPanel = require('./ControlPanel')
 
@@ -90,7 +91,8 @@ function Application (props) {
       // Chimes
       const voices = {
         chimes: new Chimes({ attack, decay, sustain, release, volume, baseFrequency }),
-        bass: new Bass()
+        bass: new Bass(),
+        kick : new Kick()
       }
       
       function onDeviceInput(event) {
