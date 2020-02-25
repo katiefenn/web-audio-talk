@@ -45,41 +45,7 @@ class Bass {
     this.volume.gain.value = 127 / 127; // 0-0.8
     this.volume2.gain.value = 6 / 127; // 0-0.8
 
-    function callback(time, note){
-      //the notes given as the second element in the array
-      //will be passed in as the second argument
-      this.synth.triggerAttackRelease(note, "12n", time);
-    }
-
-    const _ = null
-
-    //Bass sequence 1
-    var seq = new Tone.Sequence(callback.bind(this), [
-      ["F#2", _, "E2", _], ["D2", _, "C2", _], ["B1", _, "A1", _], ["G1", _, "G1", "A1"],
-      ["F#2", _, "E2", _], ["D2", _, "C2", _], ["B1", _, "A1", _], ["G1", _, "G1", "A1"],
-      ["F#2", _, "E2", _], ["D2", _, "C2", _], ["B1", _, "A1", _], ["G1", _, "G1", "A1"],
-      ["F#2", _, "E2", _], ["D2", _, "C2", _], ["B1", _, "A1", _], ["G1", _, "G1", "A1"],
-    ]).start();
-
-    // Bass sequence 2
-    // var seq = new Tone.Sequence(callback.bind(this), [
-    //   ["A1", _, _, _], ["A1", _, _, _], ["A1", _, _, _], ["A1", _, "B1", "C2"],
-    //   [_, _, _, _], ["C2", _, _, _], ["C2", _, _, _], ["C2", _, "D2", "E2"],
-    //   [_, _, _, _], ["E2", _, _, _], ["E2", _, _, _], ["E2", _, _, _],
-    //   ["F#2", _, "E2", _], ["D2", _, "C2", _], ["B1", _, "A1", _], ["G1", _, "G1", "A1"]
-    // ]).start();
-
-    //Bass sequence 3
-    // var seq = new Tone.Sequence(callback.bind(this), [
-    //   ["E2", _, "D3", _], ["E3", _, "E2", _], ["D3", _, "E2", "D3"], [_, "E2", "D3", "E3"],
-    //   ["C2", _, "C3", _], ["C2", "C3" ,"C2", _], ["A2", "A1", _, "A2"], ["A2", "B2", "G2", _],
-    //   ["E2", _, "D3", _], ["E3", _, _, _], ["D3", _, "E2", "D3"], [_, "E2", "D3", "E3"],
-    //   ["C2", _, "C3", _], ["C2", "C3" ,"C2", _], ["A2", "A1", _, "A2"], ["A2", "B2", "G2", _]
-    // ]).start();
-
-    Tone.Transport.bpm.value = 122
-
-    Tone.Transport.start()
+    this.handleSequenceEvent = this.handleSequenceEvent.bind(this)
   }
 
   handleMIDIEvent (event) {
@@ -110,6 +76,12 @@ class Bass {
         this.synth.set('detune', (event.value - 64) * 15)
         break
     }
+  }
+
+  handleSequenceEvent (time, note) {
+    //the notes given as the second element in the array
+    //will be passed in as the second argument
+    this.synth.triggerAttackRelease(note, "12n", time);
   }
 }
 
