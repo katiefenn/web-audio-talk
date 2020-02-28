@@ -1,8 +1,8 @@
 const Tone = require('tone')
+const ratios = [80, 120, 166.4, 217.2, 271.6, 328.4]
 
 class HiHat {
   constructor() {
-    const ratios = [80, 120, 166.4, 217.2, 271.6, 328.4]
 
     const bandpass = new Tone.Filter({
       type: 'bandpass',
@@ -32,28 +32,19 @@ class HiHat {
       }
     })
 
-    function callback(time, note){
-      //the notes given as the second element in the array
-      //will be passed in as the second argument
-      if (note) {
-        this.synth.triggerAttackRelease(ratios, "16n", time);
-      }
-    }
-
-    const _ = null
-    const O = 1
-
-    //Bass sequence 1
-    var seq = new Tone.Sequence(callback.bind(this), [
-      [_, _, O, O], [_, _, O, O], [_, _, O, O], [_, _, O, O],
-      [_, _, O, O], [_, _, O, O], [_, _, O, O], [_, _, O, O],
-      [_, _, O, O], [_, _, O, O], [_, _, O, O], [_, _, O, O],
-      [_, _, O, O], [_, _, O, O], [_, _, O, O], [_, _, O, O]
-    ]).start();
+    this.handleSequenceEvent = this.handleSequenceEvent.bind(this)
   }
 
   handleMIDIEvent (event) {
     this.synth.triggerAttackRelease('C1', '8n')
+  }
+
+  handleSequenceEvent (time, note){
+    //the notes given as the second element in the array
+    //will be passed in as the second argument
+    if (note) {
+      this.synth.triggerAttackRelease(ratios, "16n", time);
+    }
   }
 }
 

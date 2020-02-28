@@ -9,7 +9,7 @@ class Bass {
         type : "sawtooth"
       },
       envelope : {
-        attack : 0.00001 ,
+        attack : 0.001 ,
         decay : 0.1 ,
         sustain : 0.3 ,
         release : 0.00001
@@ -21,7 +21,7 @@ class Bass {
         type : "sawtooth"
       },
       envelope : {
-        attack : 0.00001 ,
+        attack : 0.001 ,
         decay : 0.1 ,
         sustain : 0.3 ,
         release : 0.00001
@@ -42,7 +42,7 @@ class Bass {
     
     this.filter.frequency.value = 2 / 127 * 10800; // 200 - 15000
     this.filter2.frequency.value = 2 / 127 * 10800; // 200 - 15000
-    this.volume.gain.value = 127 / 127; // 0-0.8
+    this.volume.gain.value = 1.3; // 0-0.8
     this.volume2.gain.value = 6 / 127; // 0-0.8
 
     this.handleSequenceEvent = this.handleSequenceEvent.bind(this)
@@ -79,9 +79,8 @@ class Bass {
   }
 
   handleSequenceEvent (time, note) {
-    //the notes given as the second element in the array
-    //will be passed in as the second argument
-    this.synth.triggerAttackRelease(note, "12n", time);
+    const [pitch, length] = note.split(':')
+    this.synth.triggerAttackRelease(note, length, time);
   }
 }
 
