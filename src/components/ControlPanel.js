@@ -6,8 +6,8 @@ function ControlPanel (props) {
       <h1>Web Audio experiment</h1>
       <p>Recreating famous dance tracks with WebAudio API!</p>
       <p>First: click the page. This is needed to initialise the API.</p>
-      <p>Try the baseline: S, S, S, S, D, F, F, F, F, G, H, H, H, H, K, H, G, F, D, S, A, S</p>
-      <p>Try the chimes: Q, W, I, U, Y, T, R, T, R, T, Y</p>
+      <p>Try the base voice: W, W, W, W, E, R, R, R, R, T, Y, Y, Y, Y, I, Y, T, R, E, W, Q, W</p>
+      <p>Try the chimes voice: Q, W, I, U, Y, T, R, T, R, T, Y</p>
       <dl>
         <dt>Voice:</dt><dd>{props.voice}</dd>
       </dl>

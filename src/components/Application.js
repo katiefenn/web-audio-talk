@@ -5,6 +5,7 @@ const Tone = require('tone')
 const EnvelopeVisualiser = require('./EnvelopeVisualiser')
 const MIDIAccess = require('../utils/MIDIAccess')
 const Chimes = require('../instruments/Chimes')
+const Vocoder = require('../instruments/Vocoder')
 const Bass = require('../instruments/Bass')
 const Kick = require('../instruments/Kick')
 const Clap = require('../instruments/Clap')
@@ -20,11 +21,12 @@ function Application (props) {
   const [release, setRelease] = useState(props.release)
   const [volume, setVolume] = useState(props.volume)
   const [baseFrequency, setBaseFrequency] = useState(props.baseFrequency)
-  const [voice, setVoice] = useState(props.voice)
+  const [voice, setVoice] = useState('vocoder')
   const [playState, setPlayState] = useState(props.playState)
   const [initialised, setInitialised] = useState(false)
   const [voices] = useState({
     chimes: new Chimes({ attack, decay, sustain, release, volume, baseFrequency }),
+    vocoder: new Vocoder(),
     bass: new Bass(),
     kick: new Kick(),
     clap: new Clap(),
@@ -35,13 +37,14 @@ function Application (props) {
   const _ = null
   const [sequences, setSequences] = useState(null)
   const [bassSequence, setBassSequence] = useState('bass1')
+  const [chimesSequence, setChimesSequence] = useState('chimes1')
 
   useEffect(() => {
     if (initialised) {
       console.log('Starting...')
-      const midi = new MIDIAccess({ onDeviceInput })
+      const newMidi = new MIDIAccess({ onDeviceInput })
 
-      midi.start().then(() => {
+      newMidi.start().then(() => {
         console.log('STARTED!');
       }).catch(console.error);
 
@@ -64,14 +67,14 @@ function Application (props) {
           ["E2:12n", _, "D3:12n", _], ["E3:12n", _, _, _], ["D3:12n", _, "E2:12n", "D3:12n"], [_, "E2:12n", "D3:12n", "E3:12n"],
           ["C2:12n", _, "C3:12n", _], ["C2:12n", "C3:12n" ,"C2:12n", _], ["A2:12n", "A1:12n", _, "A2:12n"], ["A2:12n", "B2:12n", "G2:12n", _]
         ]),
-        chimes1: new Tone.Sequence(voices['chimes'].handleSequenceEvent, [
+        chimes2: new Tone.Sequence(voices['chimes'].handleSequenceEvent, [
           [_, _, _, _], [_, _, _, _], [_, _, _, _], [_, _, "D4", "E4"],
           ["D5", _, "C5", _], ["B4", _, "A4", _], ["G4", _, "A4", _], ["G4", _, "A4", "B4"],
           [_, _, _, _], [_, _, _, _], [_, _, _, _], [_, _, "D4", "E4"],
           ["E5", _, "D5", _], ["C5", _, "B4", _], ["A4", _, "B4", _], ["A4", _, "B4", "E4"],
         ]),
-        chimes2: new Tone.Sequence(voices['chimes'].handleSequenceEvent, [
-          ["F5", _, "D5", _], ["C5", _, "C5", _], [_, _, "C5", _], [_, _, "C5", "F4"]
+        chimes1: new Tone.Sequence(voices['chimes'].handleSequenceEvent, [
+          ["E5", _, "D5", _], ["B4", _, "A4", _], [_, _, "A4", _], [_, _, "A4", "G4"]
         ]),
         kick: new Tone.Sequence(voices['kick'].handleSequenceEvent, [
           "C1", "C1", "C1", "C1"
@@ -90,13 +93,63 @@ function Application (props) {
         ])
       })
 
-      setMidi(midi)
+      function onKeyboardInput(e) {
+        switch (event.key) {
+          case 'a':
+            setBassSequence('bass1')
+            break
+          case 's':
+            setBassSequence('bass2')
+            break
+          case 'd':
+            setBassSequence('bass3')
+            break
+          case 'z':
+            setChimesSequence('chimes1')
+            break
+          case 'x':
+            setChimesSequence('chimes2')
+            break
+          default:
+            voices[voice].handleQwertyEvent(e)
+        }        
+      }
+    
+      function onDeviceInput(event) {
+        if (event.type === 153) {
+          switch (event.input) {
+            case 50:
+              setBassSequence('bass1')
+              break
+            case 45:
+              setBassSequence('bass2')
+              break
+            case 51:
+              setBassSequence('bass3')
+              break
+            case 36:
+              setChimesSequence('chimes1')
+              break
+            case 38:
+              setChimesSequence('chimes2')
+              break
+          }
+        } else {
+          console.log(voice)
+          voices[voice].handleMIDIEvent(event)
+        }    
+      }
+
+      document.onkeydown = onKeyboardInput
+      document.onkeyup = onKeyboardInput
+
+      setMidi(newMidi)
+
+      return () => {
+        newMidi.onDeviceInput = null
+      }
     }
-
-    document.onkeydown = onKeyboardInput
-    document.onkeyup = onKeyboardInput
-
-  }, [initialised])
+  }, [initialised, voice])
 
   useEffect(() => {
     if (playState === 'started') {
@@ -106,7 +159,8 @@ function Application (props) {
       sequences.bass3.start()
       sequences.bass3.mute = true
       sequences.chimes1.start()
-      //sequences.chimes2.start()
+      sequences.chimes2.start()
+      sequences.chimes2.mute = true
       sequences.kick.start()
       sequences.clap.start()
       //sequences.metronome.start()
@@ -125,80 +179,12 @@ function Application (props) {
     }
   }, [bassSequence])
 
-  function onKeyboardInput(e) {
-    const type = e.type === 'keydown' ? 144 : 128
-    switch (e.key) {
-      case 'q':
-        onDeviceInput({ type, input: 88, value: 0 })
-        break
-      case 'w':
-        onDeviceInput({ type, input: 89, value: 0 })
-        break
-      case 'e':
-        onDeviceInput({ type, input: 90, value: 0 })
-        break
-      case 'r':
-        onDeviceInput({ type, input: 91, value: 0 })
-        break
-      case 't':
-        onDeviceInput({ type, input: 92, value: 0 })
-        break
-      case 'y':
-        onDeviceInput({ type, input: 93, value: 0 })
-        break
-      case 'u':
-        onDeviceInput({ type, input: 94, value: 0 })
-        break
-      case 'i':
-        onDeviceInput({ type, input: 95, value: 0 })
-        break
-      case 'o':
-        onDeviceInput({ type, input: 96, value: 0 })
-        break
-      case 'a':
-        voices['bass'].toggleSound(type, 'G1')
-        break
-      case 's':
-        voices['bass'].toggleSound(type, 'A1')
-        break
-      case 'd':
-        voices['bass'].toggleSound(type, 'B1')
-        break
-      case 'f':
-        voices['bass'].toggleSound(type, 'C2')
-        break
-      case 'g':
-        voices['bass'].toggleSound(type, 'D2')
-        break
-      case 'h':
-        voices['bass'].toggleSound(type, 'E2')
-        break
-      case 'j':
-        voices['bass'].toggleSound(type, 'F2')
-        break
-      case 'k':
-        voices['bass'].toggleSound(type, 'F#2')
-        break
+  useEffect(() => {
+    if (playState === 'started') {
+      sequences[chimesSequence].mute = false;
+      ['chimes1', 'chimes2'].filter(seq => seq !== chimesSequence).map(seq => sequences[seq].mute = true)
     }
-  }
-
-  function onDeviceInput(event) {
-    if (event.type === 153) {
-      switch (event.input) {
-        case 50:
-          setBassSequence('bass1')
-          break
-        case 45:
-          setBassSequence('bass2')
-          break
-        case 51:
-          setBassSequence('bass3')
-          break
-      }
-    } else {
-      voices[voice].handleMIDIEvent(event)
-    }    
-  }
+  }, [chimesSequence])
 
   const nextPlayState = playState === 'stopped' ? 'started': 'stopped'
   const nextPlayStateLabel = playState === 'stopped' ? 'start' : 'stop'
@@ -208,12 +194,17 @@ function Application (props) {
       {initialised && (
         <>
           <ControlPanel voice={voice} />
+          <h2>Control voice</h2>
           <button onClick={() => setVoice('chimes')}>Chimes</button>
           <button onClick={() => setVoice('bass')}>Bass</button>
+          <button onClick={() => setVoice('vocoder')}>Vocoder</button>
+          <h2>Control sequencer</h2>
           <button onClick={() => setPlayState(nextPlayState)}>{nextPlayStateLabel}</button>
-          <button onClick={() => setBassSequence('bass1')}>Bass 1</button>
-          <button onClick={() => setBassSequence('bass2')}>Bass 2</button>
-          <button onClick={() => setBassSequence('bass3')}>Bass 3</button>
+          <button onClick={() => setBassSequence('bass1')}>Bass 1 (A)</button>
+          <button onClick={() => setBassSequence('bass2')}>Bass 2 (S)</button>
+          <button onClick={() => setBassSequence('bass3')}>Bass 3 (D)</button>
+          <button onClick={() => setChimesSequence('chimes1')}>Chimes 1 (Z)</button>
+          <button onClick={() => setChimesSequence('chimes1')}>Chimes 1 (X)</button>
         </>
       )}
       {!initialised && (

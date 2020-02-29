@@ -78,6 +78,36 @@ class Bass {
     }
   }
 
+  handleQwertyEvent (event) {
+    const method = event.type === 'keydown' ? 'triggerAttack' : 'triggerRelease'
+    switch (event.key) {
+      case 'q':
+        this.synth[method]('G1')
+        break
+      case 'w':
+        this.synth[method]('A1')
+        break
+      case 'e':
+        this.synth[method]('B1')
+        break
+      case 'r':
+        this.synth[method]('C2')
+        break
+      case 't':
+        this.synth[method]('D2')
+        break
+      case 'y':
+        this.synth[method]('E2')
+        break
+      case 'u':
+        this.synth[method]('F2')
+        break
+      case 'i':
+        this.synth[method]('F#2')
+        break
+    }
+  }
+
   handleSequenceEvent (time, note) {
     const [pitch, length] = note.split(':')
     this.synth.triggerAttackRelease(note, length, time);
